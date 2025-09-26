@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spelling Bee</title>
+
+  <style>
+      body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: linear-gradient(to bottom, #cce5ff, #e6f0ff, #ffffff); /* Fondo degradado azul → blanco */
+    text-align: center;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  #header {
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    gap: 15px;
+  }
+
+  #header img {
+    height: 80px; /* Tamaño del logo */
+    width: auto;
+    border-radius: 8px;
+  }
+
+  #header h1 {
+    color: #007bff; /* Azul */
+    font-size: 32px;
+    margin: 0;
+  }
+
+  h6 {
+    text-align: center;
+    background-color: #000;
+    padding: 8px 0;
+    font-weight: bold;
+    color: #c2c2d6;
+    font-size: 22px;
+    margin: 0;
+  }
+
+  /* BOTONES DE CATEGORÍAS */
+  #categories {
+    border: 2px solid black;
+    border-radius: 5px;
+    background-color: #ffffff;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+  }
+
+  .category-button {
+    border-radius: 10px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    margin: 10px;
+    width: 200px;
+    height: 70px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.3s;
+  }
+
+  .category-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+
+  /* BOTONES DE NIVELES */
+  #nivel {
+    border: 2px solid black;
+    border-radius: 5px;
+    background-color: #ffffff;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .level-button {
+    background-color: #007bff;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 5px;
+    width: 150px;
+    height: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.3s;
+  }
+
+  .level-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+
+  /* BOTÓN START */
+  #startButton {
+    background-color: #007bff;
+    border-radius: 10px;
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+    margin: 20px auto;
+    width: 400px;
+    height: 70px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    display: block;
+  }
+
+  #startButton:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+
+  /* TIMER */
+  #timerContainer {
+    border: 2px solid black;
+    width: 100%;
+    height: 60px;
+    text-align: center;
+    font-size: 24px;
+    padding: 10px;
+    background-color: black;
+    color: white;
+  }
+
+  #timer {
+    font-size: 26px;
+    font-weight: bold;
+    color: orange;
+  }
+
+  /* CONTENEDOR PRINCIPAL DE LUCES + PALABRA */
+  #lights {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 10px auto;
+    background: transparent;
+  }
+
+  /* COLUMNA DE LUCES */
+  .light-container {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+
+  /* LUZ INDIVIDUAL */
+  .light {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 5px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #f2f2f2; /* apagado */
+  }
+
+  .light img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    visibility: hidden; /* Oculto por defecto */
+  }
+
+  .light-on img {
+    visibility: visible; /* Visible cuando se activa */
+  }
+
+  /* PALABRA */
+  #word {
+    flex: 1;
+    margin: 0 15px;
+  }
+
+  #vocabulary {
+    min-width: 300px;
+    border: 2px solid black;
+    border-radius: 10px;
+    font-size: 36px;
+    font-weight: bold;
+    margin: 10px auto;
+    background: #f9f9f9;
+    padding: 20px;
+  }
+
+  /* BOTONES DE SENTENCE Y RANDOM */
+  #boton1 {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 15px 0;
+  }
+
+  #sentenceButton, #nextWord {
+    background-color: #007bff;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 15px 30px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.3s;
+  }
+
+  #sentenceButton:hover, #nextWord:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+
+  /* BOTONES DE RIGHT/WRONG */
+  #boton2 {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+  }
+
+  .result {
+    background-color: #007bff;
+    border-radius: 10px;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    width: 180px;
+    height: 60px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.3s;
+  }
+
+  #right-button:hover {
+    background-color: #00cc44;
+  }
+
+  #wrong-button:hover {
+    background-color: red;
+  }
+
+  .result:hover {
+    transform: scale(1.05);
+  }
+  </style>
+
+  <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+
+  
+
+</head>
+<body>
+  <div id="game">
+    
+    <!-- HEADER -->
+    <div id="header">
+      <!-- Botón Back -->
+      <button id="backButton" style="background:none; border:none; cursor:pointer;">
+        <span style="font-size:28px; color:#007bff;">⟵</span>
+      </button>
+      
+      <!-- Logo -->
+      <img class="bee-image" src="https://scontent.fclo8-1.fna.fbcdn.net/v/t39.30808-6/302548733_541226947803992_3045255213682004673_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=jq8RfoiQTh4Q7kNvwHI4dIm&_nc_oc=AdmQ5FwEU-D0AR7LmBREckhHx-A4IHsTXfoVLzzOKF6ZFEOZLr9gWxX4_q0AJJp5JPA&_nc_zt=23&_nc_ht=scontent.fclo8-1.fna&_nc_gid=eSm82KvY5xvktqhpG9WyvA&oh=00_Afayy_cOpcusz9e8vpCcGFLk1GDj1iOfftGO2WHAY7zhRg&oe=68DC0383" alt="logo" />
+
+      <!-- Texto Instituto Chipre -->
+      <h1>Instituto Chipre</h1>
+    </div>
+
+    <!-- Subtítulo -->
+    <h6>Spelling Bee Contest</h6>
+
+    <!-- SECCIÓN DE CATEGORÍAS -->
+    <div id="categoryButtons">
+      <h3 class="title">Categories</h3>
+      <div id="categories">
+        <button id="juniorCategory" class="category-button">Junior</button>
+        <button id="semiSeniorCategory" class="category-button">Semi-Senior</button>
+        <button id="seniorCategory" class="category-button">Senior</button>
+      </div>
+    </div>
+
+    
+
+    <!-- CONTENEDOR DE PALABRAS Y LUCES -->
+    <div id="wordContainer" hidden>
+      <!-- Timer -->
+      <div id="timerContainer" aria-live="assertive">
+        <p>Time left: <span id="timer">30</span> seconds</p>
+      </div>
+
+      <!-- Luces + Palabra -->
+      <div id="lights">
+        <!-- Columna izquierda -->
+        <div class="light-container">
+          <div id="left-right-light" class="light light-off">
+            <img src="https://drive.google.com/thumbnail?sz=w1000&id=1IY8lqhxkvNPSY7rGrzGapzZHgqlV1vzX" alt="Right Answer">
+          </div>
+          <div id="left-wrong-light" class="light light-off">
+            <img src="https://drive.google.com/thumbnail?sz=w1000&id=1Yn6a5PVB8p4Fgx3-r4Y_czAiIWgp9eO3" alt="Wrong Answer">
+          </div>
+        </div>
+
+        <!-- Palabra y botones -->
+        <div id="word">
+          <div id="vocabulary">
+            <p id="wordToSpell"></p>
+          </div>
+          <div id="boton1">
+            <button id="sentenceButton">Sentence</button>
+            <button id="nextWord">Random word</button>
+          </div>
+          <div id="boton2">
+            <button id="right-button" class="result">Right</button>
+            <button id="wrong-button" class="result">Wrong</button>
+          </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div class="light-container">
+          <div id="right-wrong-light" class="light light-off">
+            <img src="https://drive.google.com/thumbnail?sz=w1000&id=1Yn6a5PVB8p4Fgx3-r4Y_czAiIWgp9eO3" alt="Wrong Answer">
+          </div>
+          <div id="right-right-light" class="light light-off">
+            <img src="https://drive.google.com/thumbnail?sz=w1000&id=1IY8lqhxkvNPSY7rGrzGapzZHgqlV1vzX" alt="Right Answer">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTONES DE NIVELES -->
+    <div id="levelButtons" hidden>
+      <h3 class="title">Rounds</h3>
+      <div id="nivel">
+        <button id="round1" class="level-button">Round 1</button>
+        <button id="round2" class="level-button">Round 2</button>
+        <button id="round3" class="level-button">Round 3</button>
+        <button id="round4" class="level-button">Round 4</button>
+        <button id="round5" class="level-button">Round 5</button>
+      </div>
+    </div>
+
+    <!-- LOGO PIE -->
+    <div id="logo">
+      <img class="responsive-image" src="https://drive.google.com/thumbnail?sz=w1000&id=1euLKczfVCI09jPiZzh1nIYRGzwssmysm" alt="Secretaria de educación">
+    </div>
+  </div>
+
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+  // Element references
+  const backButton = document.getElementById('backButton');
+  const categoryButtons = document.getElementById('categoryButtons');
+  const levelButtons = document.getElementById('levelButtons');
+  const wordContainer = document.getElementById('wordContainer');
+  const wordToSpell = document.getElementById('wordToSpell');
+  const nextWordButton = document.getElementById('nextWord');
+  const sentenceButton = document.getElementById('sentenceButton');
+  const timerDisplay = document.getElementById('timer');
+  const rightButton = document.getElementById('right-button');
+  const wrongButton = document.getElementById('wrong-button');
+  const leftRightLight = document.getElementById('left-right-light');
+  const leftWrongLight = document.getElementById('left-wrong-light');
+  const rightRightLight = document.getElementById('right-right-light');
+  const rightWrongLight = document.getElementById('right-wrong-light');
+  const round1Button = document.getElementById('round1');
+  const round2Button = document.getElementById('round2');
+  const round3Button = document.getElementById('round3');
+  const round4Button = document.getElementById('round4');
+  const round5Button = document.getElementById('round5');
+  const vocabularyElement = document.getElementById('vocabulary');
+
+  let timer = null;
+  let timeLeft = 30;
+  let currentRound = 1;
+  let currentCategory = '';
+  let currentWord = '';
+  let usedWords = [];
+  let firstWordShown = false;
+
+  // ================== WORD BANK ==================
+  const words = {
+    junior: {
+      round1: ['AIRPORT','ANIMALS','AWKWARD','BEDROOM','BECAUSE','BUTCHER','CONSUME','DESKTOP','EARRING','ENGLAND','FACTORY','GERMANY','GRANDAD','HANDBAG','HEALTHY','HOLIDAY','JANUARY','KITCHEN','LIBRARY','MESSAGE','MINERAL','OCTOBER','OUTSIDE','PATTERN','PERFORM','PICTURE','PREVENT','PRODUCT','PROTEIN','QUICKLY','ROMANIA','SCIENCE','SPANISH','STUDENT','SUGGEST','SURFING','TEACHER','TUESDAY','UNIFORM','UPGRADE','VOLCANO','WEEKEND','ACROSS','ALWAYS','ANYONE','AUGUST','BASKET','BEFORE','BETTER','BLAZER','BUTTON','CELERY','CEREAL','CHURCH','COFFEE','DOCTOR','ELEVEN','EXPERT','FLYING','FATHER','FUNNEL','GALAXY','GARAGE','HELMET','LAWYER','MOTHER','MONDAY','MUSEUM'],
+      round2: ['AFTERNOON','ALLIGATOR','ALTHOUGH','ARCHITECT','ARRIVALS','ATLANTIC','AUDIENCE','BACKYARD','BASEMENT','BATHROOM','BRACELET','BUTTERFLY','CAROUSEL','COLOMBIAN','COMMUNITY','CONGRESS','CONSIDER','CORRIDOR','CUSTOMER','COLISEUM','DAUGHTER','DECEMBER','DESIGNER','DIFFERENT','ECOSYSTEM','FEBRUARY','FIREWORK','FISHERMAN','GEOGRAPHY','HAPPINESS','HOLY WEEK','JELLYFISH','KEYBOARD','LIPSTICK','MAJORITY','MINORITY','MOVEMENT','NIGHTCLUB','NOTEBOOK','NOVEMBER','PAINTING','PINEAPPLE','PORTUGAL','PRINCIPAL','PROFESSOR','REPUBLIC','RESTROOMS','SATURDAY','SCIENTIST','SCISSORS','SEPTEMBER','SOMETIME','SNEAKERS','SOLSTICE','SPRINKLER','STRATEGY','SUPPLIER','TANGERINE','THURSDAY','TOGETHER','TOMORROW','TRAVELER','UMBRELLA','VEGETABLE','WAITRESS','YESTERDAY'],
+      round3: ['AUDITORIUM','ATTRACTION','BUS STATION','CARBOHYDRATE','CELEBRATION','COFFEE FARM','COFFEE HARVEST','COFFEE PICKER','PLANTATION','COFFEE PRODUCTION','COFFEE REGION','COFFEE TRIANGLE','COUNTY FAIR','DEMOCRATIC','DIFFERENCE','DISTRIBUTION','ELECTRICITY','FACE TO FACE','FIRE STATION','GRADUATION','LEISURE TRAVEL','POLICE STATION','POST OFFICE','RAINFOREST','RELATIONSHIP','RESTAURANT','SONGWRITER','STRAWBERRIES','SWITZERLAND','TRADITIONAL','TRAIN STATION','UNSTOPPABLE'],
+      round4: ['AGAINST','COULD','GROW UP','KILOMETER','PARAGRAPH','APPOINTMENT','DANGEROUS','LAKE','PARK','ATHLETIC','DECORATION','ALSO','LAND','PHARMACY','BEAR','DUCK','HIMSELF','POLAND','BETWEEN','EDUCATION','HOLLAND','METHOD','RIGHT','FOREIGN','HUNGRY','MICROWAVE','ROUND','FRIDAY','INVITATION','MONKEY','SECRETARY','BOTTOM','GENEROUS','ISLAND','NEWSPAPER','SUCCESSFUL','BUTTER','GLOVES','JOURNALIST','NUMBER','SPINACH','CALENDAR','KETCHUP','PAPER','WEDNESDAY']
+    },
+    semiSenior: {
+      round1: ['AFRAID','AMAZING','ASTHMA','AUTHOR','BAMBOO','BEAUTY','BECAME','BOUGHT','BROTHER','BROUGHT','BRUISE','BUFFALO','BULIMIA','CAMERA','CHEEKS','CHEESE','CHICKEN','CLOUDY','COFFEE','CONDOR','COOKIES','COURAGE','COUSIN','CRAMPS','DENTIST','DESERT','DEVICE','EARACHE','EMPATHY','ENERGY','EYEBROW','FAMILY','FARMER','FINGER','FIT IN','FOREARM','FOREST','FORGAVE','FORGOT','FOUGHT','GADGETS','GET BY','GET IN','GET UP','GIRAFFE','GLACIER','GO OFF','GO OUT','GORILLA','HONESTY','HOTSPOT','HUSBAND','INJURY','JUNGLE','KIDNEY','LAPTOP','LEOPARD','LETTUCE','LIZARD','MEADOW','MEASLES','MINUTE','NAUSEA','NOSTRIL','PAINFUL','PARENTS','PARTNER','PENGUIN','PRINTER','PROGRAM','PUT ON','RECYCLE','RESPECT','SCANNER','SCREEN','SET OFF','SHIVERS','SPECIES','SPIDER','STAY IN','STOMACH','SUNBURN','SUPPORT','SYSTEM','TAUGHT','THOUGHT','TOENAIL','TONGUE','TURN ON','UPLOAD','VILLAGE','WAKE UP','WEBCAM','WEBSITE'],
+      round2: ['ANOREXIA','ARMADILLO','AUTOMATIC','AVAILABLE','BEAUTIFUL','BEVERAGE','BISCUITS','BOYFRIEND','BREAKDOWN','BUMBLEBEE','CALL OFF','CATCH ON','CELLPHONE','CHILDREN','COME OVER','COMPUTER','CONFIDENT','COUNT ON','CREATIVE','CUCUMBER','DIABETES','DIFFICULT','DISGUSTED','DOUGHNUT','DOWNLOAD','DRAMATIC','DROP OUT','EGGPLANT','ELEPHANT','ESPRESSO','EXCELLENT','EXPENSIVE','FAIRNESS','FOREHEAD','FRACTURE','FRIENDLY','GET ALONG','GRANDSON','GRATEFUL','HAMBURGER','HANDSOME','HANG OUT','HEADACHE','ICE CREAM','INTEGRITY','INTERNET','INTESTINE','LIE DOWN','LOOK OUT','MECHANIC','MILKSHAKE','MOSQUITO','MOUNTAIN','OVERCAME','PANCREAS','PATIENCE','PICK OUT','PINEAPPLE','PODCASTS','POISONING','POLLUTION','POTATOES','RUN AWAY','RUN INTO','SAND DUNE','SAUSAGES','SHOULDER','SIT DOWN','SMOOTHIE','SOFTWARE','TAKE OFF','TOLERANCE','TOOTHACHE','TORTOISE','WATERFALL','WHIRLPOOL','WORK OUT'],
+      round3: ['ACCEPTABLE','AGGRESSIVE','CHOCOLATE CAKE','CITIZENSHIP','CLIMATE CHANGE','COLLABORATION','CONCUSSION','DEFORESTATION','EARTHQUAKE','EATING DISORDER','EDUCATIONAL','ELECTRICIAN','ENDANGERED','EXTINCTION','FEATHERLESS','FLORESCENCE','FRIENDSHIP','GENERATION','GET ACROSS','GO STRAIGHT','HAILSTORM','HEADMASTER','HEART ATTACK','HIGHLIGHTS','HIPPOPOTAMUS','IMMEDIATELY','LEMONADE','LOOK AROUND','LOOK AFTER','LOOK FORWARD','MEATBALLS','PEACOCK','PHOTOCOPIER','PLAGIARISM','PROBLEMATIC','REFRIGERATOR','RESPIRATION','SENSITIVITY','SPECULATION','STRAWBERRIES','TECHNOLOGY','UNDERGROUND'],
+      round4: ['WEATHER','BROKEN LEG','COTTON CANDY','STREAM','DELIGHTED','CLIMATE','ALLERGY','BLUEBERRIES','NAVIGATION','DISAPPOINTED','TOMATO SOUP','PUDDING','CONSERVATIONIST','E-COMMERCE','PRECIOUS','ENVIRONMENT','CAULIFLOWER','ACID RAIN','INNOVATIVE','AMUSING','COCONUT','FRENCH FRIES','DISPOSABLE','BROWSER','GORGEOUS','WHALE','TANGERINE','EARTHQUAKE','WIRELESS','MODERN','REINDEER','AVOCADO','RESOURCES','WIFI','YOUNG','PORCUPINE','BELL PEPPER','TSUNAMI','ONLINE','ATTRACTIVE','DRAGONFLY','GARLIC','HEAD','WHATSAPP','COLORFUL','CROCODILE','BANANA','MUSTACHE','MASSIVE','DESOLATE']
+    },
+    senior: {
+      round1: ['ACCENT','ACROSTIC','ADMIRABLE','AMNESIA','JEALOUS','ATLANTIC','BALANCE','BIRDS','BISCUIT','CAPABLE','CAREFUL','CARPENTER','CELEBRITY','CHEMESTRY','COMPANY','COMMUNITY','CULTURAL','DANGER','BAGGAGE','DIABETES','DIALOGUE','DIGESTION','DINOSAUR','DEVICE','ELEPHANT','EUPHORIA','EXPENSE','EMERGE','FOREIGN','FURNITURE','GESTURE','HELMET','HONESTY','HOSTILITY','IDIOM','ILLEGAL','INCLUSION','JUSTIFY'],
+      round2: ['ACCIDENT','ADAPTATION','ADMISSION','ADVENTURE','ARRIVALS','ASTONISHED','ATHLETIC','ATTRACTIVE','CROWDED','BRILLIANT','COMMERCE','CAUTIOUS','CONCERNED','CONSUMER','HARVEST','IMAGINARY','HYGIENE','INTANGIBLE','COUNTRIES','DANGEROUS','DAUGHTER','DECREASE','DEPARTURE','DISEASE','DYNAMICS','EFFICIENCY','EMISSIONS','ENORMOUS','EXHAUSTED','FLOURISH','FORECAST','FOSTERING','GENUINE','GLAMOROUS','GROWERS','GUIDANCE','GYMNASIUM','HANDSOME'],
+      round3: ['ACCOMODATE','ACCOUNTANT','INDIGENOUS','ADVANTAGES','AFFORDABLE','APPEALING','APPROPRIATE','ARCHETYPE','ATMOSPHERE','INTERFERENCE','AVAILABLE','BARBECUE','BASICALLY','BUSINESS','EXAGGERATE','CAPPUCCINO','CHARISMATIC','CONCEITED','CROCODILE','CURRENTLY','CORRUPTION','DESTINATION','DISGUISE','EFFECTIVELY','INVESTMENT','ENTERPRISE','ENTHUSIASM','JOURNALIST','EXPENDABLE','EXTRAVAGANT','JUDGMENT','AWARNESS','GENERATIONS','HARASSMENT','HEMORRHAGE','HERITAGE','HUMILATION','IMMEDIATELY'],
+      round4: ['INTELLECTUAL','APPROXIMATELY','BIBLIOGRAPHY','CARBOHYDRATE','INFLAMMATORY','DISAPPOINTMENT','DEFORESTATION','DEVELOPMENT','DISAPPOINTED','DRAMATICALLY','COMFORTABLE','FASCINATING','FRIGHTENING','DIFFERENTIATE','CALISTHENICS','ECOSYSTEM','ECOTURISM','CONNECTION','ELECTRONIC','EXTRAVAGANT','FERTILIZATION','GEOGRAPHIC','IMPOSSIBLE','GRADUATION','DEVASTATING','CATASTROPHE','INSTRUCTION','INTELLIGENCE','HYPOTHETICAL','ENGINEERING','ENVIRONMENT','APPLICATION'],
+      round5: ['DOWNLOAD','FISHERMAN','CHILDHOOD','FOREHEAD','HAIRDRESSER','CHAMPIONSHIP','BACKGROUND','COFFEE BEANS','COFFEE HARVEST','COFFEE PICKER','COFFEE PLANTATION','ANESTHESIOLOGIST','ENVIRONMENTALLY','INFRASTRUCTURE','COMPREHENSIVE','COFFEE PLANTATION','COFFEE TASTING','FLIGHT ATTENDANT','FLIGHT TICKET','GET ALONG WITH','GLOBAL WARMING','HEALTHCARE','HIGH QUALITY','HONEYMOON','ACQUAINTANCE','INTERPRETATION','COMMEMORATE','DISCRIMINATION','COMMUNICATION','INTERCULTURAL']
+    }
+  };
+
+  // ================== SENTENCES (auto-generated) ==================
+  const sentences = {};
+  for (const cat in words) {
+    sentences[cat] = {};
+    for (const rnd in words[cat]) {
+      sentences[cat][rnd] = {};
+      words[cat][rnd].forEach(w => {
+        // If the word contains a space, we say "words" (plural), else "word"
+        const phrase = w.includes(' ') ? `spell the word ${w}.` : `spell the word ${w}.`;
+        sentences[cat][rnd][w] = phrase;
+      });
+    }
+  }
+
+  // ================== VOICE ==================
+  function speak(text, onEnd) {
+  // Cancelar cualquier voz en curso
+  responsiveVoice.cancel();
+
+  // Usar ResponsiveVoice con voz masculina en inglés americano
+  responsiveVoice.speak(
+    text,
+    "US English Male",
+    {
+      rate: 0.9,
+      onend: onEnd || function () {}
+    }
+  );
+}
+
+  // ================== HELPERS ==================
+  function resetUsedWords() {
+    usedWords = [];
+  }
+
+  function getWordsForCurrent() {
+    return words[currentCategory][`round${currentRound}`] || [];
+  }
+
+  function getSentenceForCurrent() {
+    const map = sentences[currentCategory] && sentences[currentCategory][`round${currentRound}`];
+    if (!map) return '';
+    return map[currentWord] || `Please spell the word ${currentWord}.`;
+  }
+
+  // ================== MAIN: updateWord ==================
+  function updateWord() {
+    // If first time, announce category and round then return
+    if (!firstWordShown) {
+      firstWordShown = true;
+      const catName = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
+      const catText = `${catName} category.`;
+      const roundText = `Round ${currentRound}.`;
+      wordToSpell.textContent = catText;
+      speak(catText, () => {
+        // after category announcement, announce round
+        speak(roundText);
+      });
+      return;
+    }
+
+    const list = getWordsForCurrent();
+    if (!list || list.length === 0) {
+      wordToSpell.textContent = 'No words in this round.';
+      return;
+    }
+
+    // pick random unused index
+    if (usedWords.length >= list.length) usedWords = [];
+    let idx;
+    do {
+      idx = Math.floor(Math.random() * list.length);
+    } while (usedWords.includes(idx) && usedWords.length < list.length);
+
+    currentWord = list[idx];
+    usedWords.push(idx);
+    wordToSpell.textContent = currentWord;
+
+    // speak word, then start timer 5s after speech ends
+    speak(currentWord, () => {
+      // start timer after 5s delay (gives extra time)
+      clearInterval(timer);
+      setTimeout(() => {
+        startTimer();
+      }, 5000);
+    });
+  }
+
+  // ================== TIMER ==================
+  function startTimer() {
+    clearInterval(timer);
+    timeLeft = 30;
+    timerDisplay.textContent = timeLeft;
+    timer = setInterval(() => {
+      timeLeft--;
+      timerDisplay.textContent = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        handleTimeout();
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timer);
+  }
+
+  function handleTimeout() {
+    turnOnLights('red');
+    setTimeout(turnOffLights, 3000);
+  }
+
+  // ================== LIGHTS ==================
+  function turnOnLights(color) {
+    if (color === 'green') {
+      leftRightLight.classList.add('light-on');
+      rightRightLight.classList.add('light-on');
+      leftWrongLight.classList.remove('light-on');
+      rightWrongLight.classList.remove('light-on');
+      vocabularyElement.style.backgroundColor = 'lime';
+    } else if (color === 'red') {
+      leftWrongLight.classList.add('light-on');
+      rightWrongLight.classList.add('light-on');
+      leftRightLight.classList.remove('light-on');
+      rightRightLight.classList.remove('light-on');
+      vocabularyElement.style.backgroundColor = 'red';
+    }
+  }
+
+  function turnOffLights() {
+    leftRightLight.classList.remove('light-on');
+    rightRightLight.classList.remove('light-on');
+    leftWrongLight.classList.remove('light-on');
+    rightWrongLight.classList.remove('light-on');
+    vocabularyElement.style.backgroundColor = '';
+  }
+
+  // ================== EVENT LISTENERS ==================
+  // Category buttons
+  const juniorBtn = document.getElementById('juniorCategory');
+  const semiBtn = document.getElementById('semiSeniorCategory');
+  const seniorBtn = document.getElementById('seniorCategory');
+
+  juniorBtn.addEventListener('click', () => {
+    currentCategory = 'junior';
+    levelButtons.hidden = false;
+    categoryButtons.hidden = true;
+    backButton.hidden = false;
+
+    // hide round5 for non-senior
+    if (round5Button) round5Button.style.display = 'none';
+    resetUsedWords();
+    firstWordShown = false;
+  });
+
+  semiBtn.addEventListener('click', () => {
+    currentCategory = 'semiSenior';
+    levelButtons.hidden = false;
+    categoryButtons.hidden = true;
+    backButton.hidden = false;
+    if (round5Button) round5Button.style.display = 'none';
+    resetUsedWords();
+    firstWordShown = false;
+  });
+
+  seniorBtn.addEventListener('click', () => {
+    currentCategory = 'senior';
+    levelButtons.hidden = false;
+    categoryButtons.hidden = true;
+    backButton.hidden = false;
+    if (round5Button) round5Button.style.display = 'inline-block';
+    resetUsedWords();
+    firstWordShown = false;
+  });
+
+  // Round buttons
+  round1Button.addEventListener('click', () => {
+    currentRound = 1;
+    levelButtons.hidden = true;
+    wordContainer.hidden = false;
+    backButton.hidden = false;
+    resetUsedWords();
+    firstWordShown = false;
+    updateWord();
+  });
+  round2Button.addEventListener('click', () => {
+    currentRound = 2;
+    levelButtons.hidden = true;
+    wordContainer.hidden = false;
+    backButton.hidden = false;
+    resetUsedWords();
+    firstWordShown = false;
+    updateWord();
+  });
+  round3Button.addEventListener('click', () => {
+    currentRound = 3;
+    levelButtons.hidden = true;
+    wordContainer.hidden = false;
+    backButton.hidden = false;
+    resetUsedWords();
+    firstWordShown = false;
+    updateWord();
+  });
+  round4Button.addEventListener('click', () => {
+    currentRound = 4;
+    levelButtons.hidden = true;
+    wordContainer.hidden = false;
+    backButton.hidden = false;
+    resetUsedWords();
+    firstWordShown = false;
+    updateWord();
+  });
+  if (round5Button) {
+    round5Button.addEventListener('click', () => {
+      currentRound = 5;
+      levelButtons.hidden = true;
+      wordContainer.hidden = false;
+      backButton.hidden = false;
+      resetUsedWords();
+      firstWordShown = false;
+      updateWord();
+    });
+  }
+
+  // Next word
+  nextWordButton.addEventListener('click', () => {
+    stopTimer();
+    updateWord();
+  });
+
+  // Sentence button
+  sentenceButton.addEventListener('click', () => {
+    if (!currentWord) {
+      const s = getSentenceForCurrent();
+      speak(s);
+      return;
+    }
+    const sentence = getSentenceForCurrent();
+    speak(sentence);
+  });
+
+  // Right / Wrong
+  rightButton.addEventListener('click', () => {
+    stopTimer();
+    turnOnLights('green');
+    setTimeout(turnOffLights, 3000);
+  });
+  wrongButton.addEventListener('click', () => {
+    stopTimer();
+    turnOnLights('red');
+    setTimeout(turnOffLights, 3000);
+  });
+
+  // Back button behavior
+  backButton.addEventListener('click', () => {
+    if (!wordContainer.hidden) {
+      wordContainer.hidden = true;
+      levelButtons.hidden = false;
+      stopTimer();
+      window.speechSynthesis.cancel();
+    } else if (!levelButtons.hidden) {
+      levelButtons.hidden = true;
+      categoryButtons.hidden = false;
+      stopTimer();
+      window.speechSynthesis.cancel();
+    } else {
+      // already at categories view, hide back
+      categoryButtons.hidden = false;
+      levelButtons.hidden = true;
+      wordContainer.hidden = true;
+      backButton.hidden = true;
+      stopTimer();
+      window.speechSynthesis.cancel();
+    }
+  });
+
+  // Initialize view
+  categoryButtons.hidden = false;
+  levelButtons.hidden = true;
+  wordContainer.hidden = true;
+  if (round5Button) round5Button.style.display = 'none';
+  backButton.hidden = true;
+});
+  </script>
+</body>
+</html>
